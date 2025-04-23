@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from application.database import User, db
 from application.bp.authentication.forms import RegisterForm
 
@@ -8,7 +8,7 @@ authentication = Blueprint('authentication', __name__, template_folder='template
 def dashboard():
     return render_template('dashboard.html')
 
-@authentication.route('/registration', methods=['GET', 'POST'])
+@authentication.route('/registration', methods=['POST', 'GET'])
 def registration():
     form = RegisterForm()
 
@@ -16,15 +16,14 @@ def registration():
         email = form.email.data
         password = form.password.data
 
-        # Check if user already exists
+        # Check for existing user
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash('Email already registered.', 'danger')
             return redirect(url_for('authentication.registration'))
 
-        # Create new user
-        new_user = User(email=email)
-        new_user.set_password(password)
+        # Create and save new user
+        new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
 
