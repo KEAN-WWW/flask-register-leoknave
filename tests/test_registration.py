@@ -64,4 +64,4 @@ def test_user_registration_duplicate_user_fail(client, app):
 
     assert response.request.path == url_for('authentication.registration')
     assert response.status_code == 200
-    assert b"Already Registered" in response.data
+    assert b"Email already registered." in response.data
